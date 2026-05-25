@@ -13,6 +13,7 @@ export const LOAD_STATES = {
 	'Success': 2,
 	'Failure': 3,
 	'Reload': 4,
+	'Pending': 5,
 };
 
 export const CONNECTION_DOMAINS = [

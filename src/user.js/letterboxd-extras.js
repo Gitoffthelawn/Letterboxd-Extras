@@ -609,10 +609,7 @@ GM_addStyle(`
 			font-size: 14px;
 			vertical-align: super;
 		}
-
-		.extras-lost-film{
-			display: none !important;
-		}
+			
 		.extras-lost-filter span{
 			cursor: pointer;
 			-webkit-user-select: none; /* Safari */
