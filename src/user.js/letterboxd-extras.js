@@ -731,8 +731,8 @@ GM_addStyle(`
 			
 		.extras-error-div {
 			position: fixed;
-			right: 5;
-			top: 5;
+			right: 5px;
+			top: 5px;
 			z-index: 99999;
 		}
 		.extras-error-button {
@@ -1869,6 +1869,7 @@ const letterboxd = {
 			// Add 'Does the dog die?' link
 			if (this.idsCollected == true && (this.imdbID != '' || this.tmdbID != '') && this.wikiData.state == 2 && this.letterboxdTitle != null && document.querySelector('.micro-button') != null && this.linksMoved == true && letterboxd.storage.get('ddd-enabled') === true){
 				if (this.ddd.id != null && this.ddd.id != ''){
+					letterboxd.helpers.WriteConsoleLog('DEBUG', `DoesTheDogDie: ID found in WikiData.`);
 					this.addDDD();
 				}
 				else if (this.ddd.state == 0){
@@ -3746,11 +3747,14 @@ const letterboxd = {
 			if (this.imdbID != ''){
 				const response = await new Promise((resolve, reject) => {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-						if (letterboxd.helpers.ValidateResponse("DDD IMDb", value) == false){
+						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (IMDb search)", value) == false){
+							if (value.status == 401){
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+							}
 							reject(new Error("Invalid response"));
 							return;
 						}
-        					resolve(value);
+						resolve(value);
 					});
 				});
 				var result = response.response;
@@ -3772,11 +3776,14 @@ const letterboxd = {
 				url = "https://www.doesthedogdie.com/dddsearch?q=" + this.letterboxdTitle;
 				var response = await new Promise((resolve, reject) => {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-						if (letterboxd.helpers.ValidateResponse("DDD Search", value) == false){
+						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
+							if (value.status == 401){
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+							}
 							reject(new Error("Invalid response"));
 							return;
 						}
-        					resolve(value);
+						resolve(value);
 					});
 				});					
 				var result = response.response;
@@ -3786,7 +3793,10 @@ const letterboxd = {
 					url = "https://www.doesthedogdie.com/dddsearch?q=" + this.letterboxdNativeTitle;
 					response = await new Promise((resolve, reject) => {
 						browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-							if (letterboxd.helpers.ValidateResponse("DDD Search", value) == false){
+							if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
+								if (value.status == 401){
+									letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+								}
 								reject(new Error("Invalid response"));
 								return;
 							}

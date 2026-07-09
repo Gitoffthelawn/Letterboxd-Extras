@@ -51,7 +51,6 @@
 		"https://webapp.cinemascore.com/*",
 		"https://query.wikidata.org/*",
 		"https://www.metacritic.com/*",
-		"https://api.jikan.moe/*",
 		"https://graphql.anilist.co/*"
 	],
 	
@@ -66,7 +65,8 @@
 		"https://markuapi.kabk.dev/*",
 		"https://kinopoiskapiunofficial.tech/api/*",
 		"https://api.douban.com/*",
-		"https://api.mydramalist.com/*"
+		"https://api.mydramalist.com/*",
+		"https://api.tenrai.org/*"
 	],
 
 	"background": {

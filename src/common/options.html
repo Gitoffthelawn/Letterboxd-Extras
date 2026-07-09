@@ -50,7 +50,11 @@
             <h4>MyAnimeList</h4>
             <div>
                 <label for="mal-enabled">Display MyAnimeList:</label>
-                <input type="checkbox" id="mal-enabled" class="setting"/>
+                <input type="checkbox" id="mal-enabled" permission="https://api.tenrai.org/*" class="setting"/>
+            </div>
+            <div class="div-request-permission">
+                <label style="color: red;">! Missing Permission !</label>
+                <input type="button" id="mal-permissions" class="request-permission" permissionTarget="mal-enabled" value="Request Permission"/>
             </div>
         </div>
         <div>
