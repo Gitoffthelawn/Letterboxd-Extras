@@ -885,8 +885,7 @@ const letterboxd = {
 		// Date
 		filmDate: { date: null, precision: null },
 
-		// MAL - state replaced by MyAnimeListHelper
-		// mal: { state: 0, id: null, url: null, data: null, statistics: null, highest: 0 },
+		// MAL Helper
 		myAnimeListHelper: null,
 
 		// Anilist Helper
@@ -1548,10 +1547,8 @@ const letterboxd = {
 
 									// Get AniList data
 									if (this.wiki !== null && this.wiki.Anilist_ID && this.wiki.Anilist_ID.value && letterboxd.storage.get('al-enabled') === true) {
-											
 										this.wikiData.Anilist_ID = this.wiki.Anilist_ID.value;
 										this.anilistHelper.getData(this.wiki.Anilist_ID.value);
-
 									}
 
 									// Get Content Ratings (MPAA, BBFC, etc)
