@@ -10,12 +10,15 @@
 		},
 		"gecko": {
 			"id": "{9abb0ce4-6348-4119-b97a-3f8116351aca}",
-			"strict_min_version": "109.0"
+			"strict_min_version": "115.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
 		}
 	},	  
 	
 	"browser_action": {
-		"default_title": "Letterboxd Extras Settings",
+		"default_title": "Letterboxd Extras",
 		"default_popup": "options.html?type=action",
 		"default_icon": {
 			"16": "icon16.png",
