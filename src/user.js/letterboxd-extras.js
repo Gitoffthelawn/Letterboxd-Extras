@@ -60,7 +60,6 @@ GM_addStyle(`
 		}
 		.meta-score-user, .meta-score-user:hover {
 			border-radius: 100px;
-			/*margin-left: 10px;*/
 		}
 		.cinema-grade, .cinema-grade:hover {
 			font-size:20px;
@@ -755,6 +754,9 @@ GM_addStyle(`
 			vertical-align: center;
 			margin-left: 5px;
 			background-image: linear-gradient(to bottom,#ffffff40 5%,#fff0 95%);
+			text-align: center;
+			color: #000;
+			font-weight: bold;
 		}
 		.extras-error-holder {
 			display: none;
@@ -766,15 +768,24 @@ GM_addStyle(`
 			width: 200px;
 			right: 0;
 			top: 28px;
-			padding: 4px 0;
 		}
 		.extras-error-holder li {
 			display: block;
-			color: #2c3440;
 			border: none;
-			padding: 4px 15px;
-			text-shadow: rgba(255,255,255,.1) 0 1px 0;
+			border-bottom: 1px solid rgba(0,0,0,.1)
+		}
+		.extras-error-holder li span,
+		.extras-error-holder li a {
+			display: block;
 			font-size: 12px;
+			color: #2c3440;
+			text-shadow: rgba(255,255,255,.1) 0 1px 0;
+			padding: 4px 15px;
+		}
+		.extras-error-holder li a:hover {
+			color: #fff;
+			background: #678;
+			text-shadow: rgba(0,0,0,.05) 0 1px 0;
 		}
 		.extras-statistics-list {
 			flex-wrap: wrap;
@@ -3746,7 +3757,7 @@ const letterboxd = {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
 						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (IMDb search)", value) == false){
 							if (value.status == 401){
-								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
 							}
 							reject(new Error("Invalid response"));
 							return;
@@ -3775,7 +3786,7 @@ const letterboxd = {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
 						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
 							if (value.status == 401){
-								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
 							}
 							reject(new Error("Invalid response"));
 							return;
@@ -3792,7 +3803,7 @@ const letterboxd = {
 						browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
 							if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
 								if (value.status == 401){
-									letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.');
+									letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
 								}
 								reject(new Error("Invalid response"));
 								return;
@@ -4117,9 +4128,11 @@ const letterboxd = {
 			}
 		},
 
-		ShowErrorMessage(message) {
+		ShowErrorMessage(message, id) {
+			let errorHolder = document.querySelector('.extras-error-holder');
+
 			// Create the error holder
-			if (document.querySelector('.extras-error-holder') == null){
+			if (errorHolder == null){
 				const div = letterboxd.helpers.createElement('div', {
 					class: 'extras-error-div'
 				});
@@ -4133,16 +4146,17 @@ const letterboxd = {
 				const label = letterboxd.helpers.createElement('span', {
 					class: 'extras-error-label'
 				});
-				label.innerText = 'Extras Error';
+				label.innerText = 'Extras Error - Click to view';
 				button.append(label);
 				
 				const badge = letterboxd.helpers.createElement('div', {
 					class: 'extras-error-badge'
 				});
+				badge.innerText = '!';
 				button.append(badge);
 
 				// The ul element that will contain the error text
-				const errorHolder = letterboxd.helpers.createElement('ul', {
+				errorHolder = letterboxd.helpers.createElement('ul', {
 					class: 'extras-error-holder'
 				});
 				div.append(errorHolder);
@@ -4152,13 +4166,30 @@ const letterboxd = {
 				button.addEventListener('click', event => {
 					toggleErrorMessage(event);
 				});
+
+				// Create the settings link
+				const li = letterboxd.helpers.createElement('li', {
+					class: 'extras-error-settings-link'
+				});
+				const a = letterboxd.helpers.createElement('a', {});
+				a.href = browser.runtime.getURL('/options.html');
+				a.target = '_blank';
+				a.innerText = 'Go to settings';
+				li.append(a);
+
+				errorHolder.append(li);
 			}
 
-			const errorHolder = document.querySelector('.extras-error-holder');
+			if (id != '' && errorHolder.querySelector(`.extras-error-${id}`) != null)
+				return;
 			
-			const li = letterboxd.helpers.createElement('li', {});
-			li.innerText = message;
-			errorHolder.append(li);
+			const li = letterboxd.helpers.createElement('li', {
+				class: `extras-error-${id}`
+			});
+			const span = letterboxd.helpers.createElement('span', {});
+			span.innerText = message;
+			li.append(span);
+			errorHolder.querySelector('.extras-error-settings-link').before(li);
 
 		},
 
@@ -4183,7 +4214,7 @@ const letterboxd = {
 				if (value.errors != null && value.errors.length > 0){
 					this.WriteConsoleLog('ERROR', `There was an error with the ${name} call. Message: ${value.errors[0]}`);
 					if (value.errors[0].startsWith('No permission found matching url')){
-						letterboxd.helpers.ShowErrorMessage('Letterboxd Extras is missing some permissions required for your selected options. View the settings to grant the permissions.');
+						letterboxd.helpers.ShowErrorMessage('Letterboxd Extras is missing some permissions required for your selected options. View the settings to grant the permissions.', 'permissions');
 					}
 				}else{
 					this.WriteConsoleLog('ERROR', `There was an error with the ${name} call. Code: ${value.status}`);
