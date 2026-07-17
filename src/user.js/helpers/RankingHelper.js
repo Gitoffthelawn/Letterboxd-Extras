@@ -34,7 +34,7 @@ export class RankingHelper {
         list: null,
         image: 'bfi-logo.svg',
         isRanked: true,
-        listUrl: 'https://letterboxd.com/bfi/list/sight-and-sounds-greatest-films-of-all-time/'
+        listUrl: 'https://letterboxd.com/sightsoundmag/list/sight-and-sounds-greatest-films-of-all-time/'
     };
     tspdtData = { 
         loadState: LOAD_STATES['Uninitialized'],
