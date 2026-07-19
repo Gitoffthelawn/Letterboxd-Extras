@@ -1,12 +1,12 @@
 {
 	"manifest_version": 3,
 	"name": "Letterboxd Extras",
-	"description": "Adds extra features to Letterboxd.",
-	"version": "3.19.2",
+	"description": "Display ratings from other film sites, and other nifty extras, directly on Letterboxd. Fully customizable.",
+	"version": "3.20.0",
 	"minimum_chrome_version": "116",
 	
 	"action": {
-		"default_title": "Letterboxd Extras Settings",
+		"default_title": "Letterboxd Extras",
 		"default_popup": "options.html?type=action",
 		"default_icon": {
 			"16": "icon16.png",
@@ -51,7 +51,6 @@
 		"https://webapp.cinemascore.com/*",
 		"https://query.wikidata.org/*",
 		"https://www.metacritic.com/*",
-		"https://api.jikan.moe/*",
 		"https://graphql.anilist.co/*"
 	],
 	
@@ -66,7 +65,8 @@
 		"https://markuapi.kabk.dev/*",
 		"https://kinopoiskapiunofficial.tech/api/*",
 		"https://api.douban.com/*",
-		"https://api.mydramalist.com/*"
+		"https://api.mydramalist.com/*",
+		"https://api.tenrai.org/*"
 	],
 
 	"background": {
@@ -84,7 +84,7 @@
 	
 	"web_accessible_resources": [
 		{
-		  "resources": [ "images/*" ],
+		  "resources": [ "images/*", "options.*" ],
 		  "matches": [ "https://letterboxd.com/*" ],
 		  "use_dynamic_url": true
 		}

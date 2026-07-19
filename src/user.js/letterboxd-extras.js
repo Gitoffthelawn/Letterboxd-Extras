@@ -60,7 +60,6 @@ GM_addStyle(`
 		}
 		.meta-score-user, .meta-score-user:hover {
 			border-radius: 100px;
-			/*margin-left: 10px;*/
 		}
 		.cinema-grade, .cinema-grade:hover {
 			font-size:20px;
@@ -731,8 +730,8 @@ GM_addStyle(`
 			
 		.extras-error-div {
 			position: fixed;
-			right: 5;
-			top: 5;
+			right: 5px;
+			top: 5px;
 			z-index: 99999;
 		}
 		.extras-error-button {
@@ -755,6 +754,9 @@ GM_addStyle(`
 			vertical-align: center;
 			margin-left: 5px;
 			background-image: linear-gradient(to bottom,#ffffff40 5%,#fff0 95%);
+			text-align: center;
+			color: #000;
+			font-weight: bold;
 		}
 		.extras-error-holder {
 			display: none;
@@ -766,15 +768,24 @@ GM_addStyle(`
 			width: 200px;
 			right: 0;
 			top: 28px;
-			padding: 4px 0;
 		}
 		.extras-error-holder li {
 			display: block;
-			color: #2c3440;
 			border: none;
-			padding: 4px 15px;
-			text-shadow: rgba(255,255,255,.1) 0 1px 0;
+			border-bottom: 1px solid rgba(0,0,0,.1)
+		}
+		.extras-error-holder li span,
+		.extras-error-holder li a {
+			display: block;
 			font-size: 12px;
+			color: #2c3440;
+			text-shadow: rgba(255,255,255,.1) 0 1px 0;
+			padding: 4px 15px;
+		}
+		.extras-error-holder li a:hover {
+			color: #fff;
+			background: #678;
+			text-shadow: rgba(0,0,0,.05) 0 1px 0;
 		}
 		.extras-statistics-list {
 			flex-wrap: wrap;
@@ -885,8 +896,7 @@ const letterboxd = {
 		// Date
 		filmDate: { date: null, precision: null },
 
-		// MAL - state replaced by MyAnimeListHelper
-		// mal: { state: 0, id: null, url: null, data: null, statistics: null, highest: 0 },
+		// MAL Helper
 		myAnimeListHelper: null,
 
 		// Anilist Helper
@@ -1548,10 +1558,8 @@ const letterboxd = {
 
 									// Get AniList data
 									if (this.wiki !== null && this.wiki.Anilist_ID && this.wiki.Anilist_ID.value && letterboxd.storage.get('al-enabled') === true) {
-											
 										this.wikiData.Anilist_ID = this.wiki.Anilist_ID.value;
 										this.anilistHelper.getData(this.wiki.Anilist_ID.value);
-
 									}
 
 									// Get Content Ratings (MPAA, BBFC, etc)
@@ -1869,6 +1877,7 @@ const letterboxd = {
 			// Add 'Does the dog die?' link
 			if (this.idsCollected == true && (this.imdbID != '' || this.tmdbID != '') && this.wikiData.state == 2 && this.letterboxdTitle != null && document.querySelector('.micro-button') != null && this.linksMoved == true && letterboxd.storage.get('ddd-enabled') === true){
 				if (this.ddd.id != null && this.ddd.id != ''){
+					letterboxd.helpers.WriteConsoleLog('DEBUG', `DoesTheDogDie: ID found in WikiData.`);
 					this.addDDD();
 				}
 				else if (this.ddd.state == 0){
@@ -3746,11 +3755,14 @@ const letterboxd = {
 			if (this.imdbID != ''){
 				const response = await new Promise((resolve, reject) => {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-						if (letterboxd.helpers.ValidateResponse("DDD IMDb", value) == false){
+						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (IMDb search)", value) == false){
+							if (value.status == 401){
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
+							}
 							reject(new Error("Invalid response"));
 							return;
 						}
-        					resolve(value);
+						resolve(value);
 					});
 				});
 				var result = response.response;
@@ -3772,11 +3784,14 @@ const letterboxd = {
 				url = "https://www.doesthedogdie.com/dddsearch?q=" + this.letterboxdTitle;
 				var response = await new Promise((resolve, reject) => {
 					browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-						if (letterboxd.helpers.ValidateResponse("DDD Search", value) == false){
+						if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
+							if (value.status == 401){
+								letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
+							}
 							reject(new Error("Invalid response"));
 							return;
 						}
-        					resolve(value);
+						resolve(value);
 					});
 				});					
 				var result = response.response;
@@ -3786,7 +3801,10 @@ const letterboxd = {
 					url = "https://www.doesthedogdie.com/dddsearch?q=" + this.letterboxdNativeTitle;
 					response = await new Promise((resolve, reject) => {
 						browser.runtime.sendMessage({ name: "GETDATA", url: url, options: options, type: "JSON" }, (value) => {
-							if (letterboxd.helpers.ValidateResponse("DDD Search", value) == false){
+							if (letterboxd.helpers.ValidateResponse("DoesTheDogDie (title search)", value) == false){
+								if (value.status == 401){
+									letterboxd.helpers.ShowErrorMessage('DoesTheDogDie returned a 401 Unauthorized response. Please enter a valid API key into the Letterboxd Extras settings.', 'ddd-key');
+								}
 								reject(new Error("Invalid response"));
 								return;
 							}
@@ -4110,9 +4128,11 @@ const letterboxd = {
 			}
 		},
 
-		ShowErrorMessage(message) {
+		ShowErrorMessage(message, id) {
+			let errorHolder = document.querySelector('.extras-error-holder');
+
 			// Create the error holder
-			if (document.querySelector('.extras-error-holder') == null){
+			if (errorHolder == null){
 				const div = letterboxd.helpers.createElement('div', {
 					class: 'extras-error-div'
 				});
@@ -4126,16 +4146,17 @@ const letterboxd = {
 				const label = letterboxd.helpers.createElement('span', {
 					class: 'extras-error-label'
 				});
-				label.innerText = 'Extras Error';
+				label.innerText = 'Extras Error - Click to view';
 				button.append(label);
 				
 				const badge = letterboxd.helpers.createElement('div', {
 					class: 'extras-error-badge'
 				});
+				badge.innerText = '!';
 				button.append(badge);
 
 				// The ul element that will contain the error text
-				const errorHolder = letterboxd.helpers.createElement('ul', {
+				errorHolder = letterboxd.helpers.createElement('ul', {
 					class: 'extras-error-holder'
 				});
 				div.append(errorHolder);
@@ -4145,13 +4166,30 @@ const letterboxd = {
 				button.addEventListener('click', event => {
 					toggleErrorMessage(event);
 				});
+
+				// Create the settings link
+				const li = letterboxd.helpers.createElement('li', {
+					class: 'extras-error-settings-link'
+				});
+				const a = letterboxd.helpers.createElement('a', {});
+				a.href = browser.runtime.getURL('/options.html');
+				a.target = '_blank';
+				a.innerText = 'Go to settings';
+				li.append(a);
+
+				errorHolder.append(li);
 			}
 
-			const errorHolder = document.querySelector('.extras-error-holder');
+			if (id != '' && errorHolder.querySelector(`.extras-error-${id}`) != null)
+				return;
 			
-			const li = letterboxd.helpers.createElement('li', {});
-			li.innerText = message;
-			errorHolder.append(li);
+			const li = letterboxd.helpers.createElement('li', {
+				class: `extras-error-${id}`
+			});
+			const span = letterboxd.helpers.createElement('span', {});
+			span.innerText = message;
+			li.append(span);
+			errorHolder.querySelector('.extras-error-settings-link').before(li);
 
 		},
 
@@ -4176,7 +4214,7 @@ const letterboxd = {
 				if (value.errors != null && value.errors.length > 0){
 					this.WriteConsoleLog('ERROR', `There was an error with the ${name} call. Message: ${value.errors[0]}`);
 					if (value.errors[0].startsWith('No permission found matching url')){
-						letterboxd.helpers.ShowErrorMessage('Letterboxd Extras is missing some permissions required for your selected options. View the settings to grant the permissions.');
+						letterboxd.helpers.ShowErrorMessage('Letterboxd Extras is missing some permissions required for your selected options. View the settings to grant the permissions.', 'permissions');
 					}
 				}else{
 					this.WriteConsoleLog('ERROR', `There was an error with the ${name} call. Code: ${value.status}`);

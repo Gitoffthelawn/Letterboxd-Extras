@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "Letterboxd Extras",
-	"description": "Adds extra features to Letterboxd.",
-	"version": "3.19.2",
+	"description": "Display ratings from other film sites, and other nifty extras, directly on Letterboxd. Fully customizable.",
+	"version": "3.20.0",
 
 	"browser_specific_settings": {
 		"gecko_android": {
@@ -10,12 +10,15 @@
 		},
 		"gecko": {
 			"id": "{9abb0ce4-6348-4119-b97a-3f8116351aca}",
-			"strict_min_version": "109.0"
+			"strict_min_version": "115.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
 		}
 	},	  
 	
 	"browser_action": {
-		"default_title": "Letterboxd Extras Settings",
+		"default_title": "Letterboxd Extras",
 		"default_popup": "options.html?type=action",
 		"default_icon": {
 			"16": "icon16.png",
@@ -54,7 +57,6 @@
 		"https://webapp.cinemascore.com/*",
 		"https://query.wikidata.org/*",
 		"https://www.metacritic.com/*",
-		"https://api.jikan.moe/*",
 		"https://graphql.anilist.co/*",
 		"storage",
 		"scripting"
@@ -71,7 +73,8 @@
 		"https://markuapi.kabk.dev/*",
 		"https://kinopoiskapiunofficial.tech/api/*",
 		"https://api.douban.com/*",
-		"https://api.mydramalist.com/*"
+		"https://api.mydramalist.com/*",
+		"https://api.tenrai.org/*"
 	],
 
 	"content_scripts": [
@@ -85,5 +88,10 @@
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
-	}
+	},
+	
+	"web_accessible_resources": [
+		"images/*",
+		"options.*"
+	]
 }

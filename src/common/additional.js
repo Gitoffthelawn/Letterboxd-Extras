@@ -183,9 +183,9 @@ function toggleReviews(event, letterboxd) {
 function toggleErrorMessage(event) {
 	const element = document.querySelector('.extras-error-holder');
 
-	if (element.style.display == "none") {
-		element.style.display = "block";
-	} else {
+	if (element.style.display == "block") {
 		element.style.display = "none";
+	} else {
+		element.style.display = "block";
 	}
 }

@@ -21,9 +21,9 @@ export class MyAnimeListHelper extends Helper {
 
 	_loadData(id) {
 
-		const apiHeader = 'Jikan (MAL API)';
+		const apiHeader = 'Tenrai (MAL API)';
 
-		const url = `https://api.jikan.moe/v4/anime/${id}`;
+		const url = `https://api.tenrai.org/v1/anime/${id}`;
 		this._apiRequestCallback(apiHeader, url, 'JSON', {}, response => {
 
 			if (!response.data) {
