@@ -96,7 +96,7 @@ Letterboxd Extras also makes use of official and unofficial APIs for various fun
 - [AniList API](https://docs.anilist.co/) official API
 - [Simkl API](https://simkl.docs.apiary.io/#) official API
 - [Does the Dog Die?](https://www.doesthedogdie.com/) official API
-- [Jikan API](https://jikan.moe/) unofficial API for MyAnimeList
+- [Tenrai API](https://tenrai.org/) unofficial API for MyAnimeList
 - [Markuapi](https://github.com/e0406370/markuapi) unofficial API for Filmarks 
 - [Kinopoisk Unofficial API](https://kinopoiskapiunofficial.tech/) for Kinopoisk
 
